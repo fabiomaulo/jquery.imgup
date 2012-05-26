@@ -16,9 +16,11 @@ fabiomaulo@gmail.com
                     uploadurl: "",
                     imgUploaded: function () {
                     },
+                    uploaderror: function () {
+                    },
                     allImgsUploaded: function () {
                     },
-                    uploaderror: function () {
+                    completeFormData: function (data) {
                     }
                 };
 
@@ -34,25 +36,26 @@ fabiomaulo@gmail.com
                 this.triggerUpload = function (singleFile) {
                     if ($plugin.data("imgup").hasFormData) {
                         plugin.uploadWithFormData(singleFile);
-                    } 
+                    }
                 };
 
                 this.uploadWithFormData = function (singleFile) {
                     var datas = new FormData();
                     datas.append('image', singleFile);
-
+                    $plugin.settings.completeFormData(datas);
                     plugin.sendDatas(datas);
                 };
-                this.sendDatas = function(datas) {
+
+                this.sendDatas = function (datas) {
                     var xhr = new XMLHttpRequest();
 
                     if (xhr) {
-                        xhr.upload.addEventListener("progress", function(e) { plugin.updateProgress.call(plugin, e); }, false);
-                        xhr.addEventListener("load", function() { plugin.endUpload.call(plugin); }, false);
-                        xhr.addEventListener("abort", function() { plugin.closeXhr(plugin); }, false);
-                        document.body.addEventListener('offline', function() { plugin.endProcess(0); }, false);
+                        xhr.upload.addEventListener("progress", function (e) { plugin.updateProgress.call(plugin, e); }, false);
+                        xhr.addEventListener("load", function () { plugin.endUpload.call(plugin); }, false);
+                        xhr.addEventListener("abort", function () { plugin.closeXhr(plugin); }, false);
+                        document.body.addEventListener('offline', function () { plugin.endProcess(0); }, false);
 
-                        xhr.onreadystatechange = function() {
+                        xhr.onreadystatechange = function () {
                             if (this.readyState == 4) {
                                 var status = this.status;
 
@@ -68,12 +71,12 @@ fabiomaulo@gmail.com
                         plugin.processUpload(xhr, datas);
                     }
                 };
-                this.processUpload = function(xhr, data) {
+                this.processUpload = function (xhr, data) {
                     if ($plugin.data("imgup").hasFormData) {
                         xhr.send(data);
                     }
                 };
-                
+
                 var tFormData = false;
                 try {
                     new FormData();
@@ -83,6 +86,20 @@ fabiomaulo@gmail.com
                 }
 
                 $plugin.data("imgup", { hasFormData: tFormData, hasFileReader: window.FileReader });
+                // linkedDropZone
+                if ($plugin.settings.linkedDropZone) {
+                    $plugin.data("imgup").dropZone = $plugin.settings.linkedDropZone;
+                    $.each($plugin.settings.linkedDropZone, function (idx, dz) {
+                        dz.addEventListener('dragover', function (evt) {
+                            evt.stopPropagation();
+                            evt.preventDefault();
+                            evt.dataTransfer.dropEffect = 'copy';
+                        }, false);
+                        dz.addEventListener('drop', function (evt) {
+                            alert("drop");
+                        }, false);
+                    });
+                }
 
                 $plugin.bind("change.imgup", function () {
                     var files = plugin.files;
@@ -92,7 +109,6 @@ fabiomaulo@gmail.com
                     $plugin.settings.allImgsUploaded();
                 });
             });
-
         }
     };
 
