@@ -76,6 +76,16 @@ fabiomaulo@gmail.com
                         xhr.send(data);
                     }
                 };
+                this.triggerFilesUpload = function (files) {
+                    for (var i = 0, len = files.length; i < len; i++) {
+                        var f = files[i];
+                        if (!f.type.match('image.*')) {
+                            continue;
+                        }
+                        plugin.triggerUpload(f);
+                    }
+                    $plugin.settings.allImgsUploaded();
+                };
 
                 var tFormData = false;
                 try {
@@ -96,17 +106,17 @@ fabiomaulo@gmail.com
                             evt.dataTransfer.dropEffect = 'copy';
                         }, false);
                         dz.addEventListener('drop', function (evt) {
-                            alert("drop");
+                            evt.stopPropagation();
+                            evt.preventDefault();
+                            var files = evt.dataTransfer.files;
+                            plugin.triggerFilesUpload(files);
                         }, false);
                     });
                 }
 
                 $plugin.bind("change.imgup", function () {
                     var files = plugin.files;
-                    for (var i = 0, len = files.length; i < len; i++) {
-                        plugin.triggerUpload(files[i]);
-                    }
-                    $plugin.settings.allImgsUploaded();
+                    plugin.triggerFilesUpload(files);
                 });
             });
         }
