@@ -15,13 +15,16 @@ fabiomaulo@gmail.com
                 var settings = {
                     uploadurl: "",
                     imgMaxSize: 167772160,
-                    imgUploaded: function () {
+                    imgUploaded: function (responseText) {
                     },
-                    uploaderror: function () {
+                    uploaderror: function (responseText) {
                     },
                     allImgsUploaded: function () {
                     },
                     completeFormData: function (data) {
+                    },
+                    onFileReaded: function (file, fbinary) {
+                        // when the browser supports FileReader this event happens after upload success
                     }
                 };
 
@@ -44,17 +47,17 @@ fabiomaulo@gmail.com
                     var datas = new FormData();
                     datas.append('image', singleFile);
                     $plugin.settings.completeFormData(datas);
-                    plugin.sendDatas(datas);
+                    plugin.sendDatas(singleFile, datas);
                 };
 
-                this.sendDatas = function (datas) {
+                this.sendDatas = function (singleFile, datas) {
                     var xhr = new XMLHttpRequest();
 
                     if (xhr) {
-                        xhr.upload.addEventListener("progress", function (e) { plugin.updateProgress.call(plugin, e); }, false);
-                        xhr.addEventListener("load", function () { plugin.endUpload.call(plugin); }, false);
-                        xhr.addEventListener("abort", function () { plugin.closeXhr(plugin); }, false);
-                        document.body.addEventListener('offline', function () { plugin.endProcess(0); }, false);
+//                        xhr.upload.addEventListener("progress", function (e) { plugin.updateProgress.call(plugin, e); }, false);
+//                        xhr.addEventListener("load", function () { plugin.endUpload.call(plugin); }, false);
+//                        xhr.addEventListener("abort", function () { plugin.closeXhr(plugin); }, false);
+//                        document.body.addEventListener('offline', function () { plugin.endProcess(0); }, false);
 
                         xhr.onreadystatechange = function () {
                             if (this.readyState == 4) {
@@ -62,6 +65,17 @@ fabiomaulo@gmail.com
 
                                 if (status == 200) {
                                     $plugin.settings.imgUploaded(xhr.responseText);
+
+                                    if ($plugin.data("imgup").hasFileReader) {
+                                        var reader = new FileReader();
+                                        // Closure to capture the file information.
+                                        reader.onload = (function (theFile) {
+                                            return function (e) {
+                                                $plugin.settings.onFileReaded(theFile, e.target.result);
+                                            };
+                                        })(singleFile);
+                                        reader.readAsDataURL(singleFile);
+                                    }
                                 }
                                 if (status == 404 || status == 500) {
                                     $plugin.settings.uploaderror(xhr.responseText);
@@ -86,7 +100,7 @@ fabiomaulo@gmail.com
                         if (f.size > $plugin.settings.imgMaxSize) {
                             $plugin.settings.uploaderror("too big image");
                             continue;
-                        } 
+                        }
                         plugin.triggerUpload(f);
                     }
                     $plugin.settings.allImgsUploaded();
