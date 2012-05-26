@@ -14,6 +14,7 @@ fabiomaulo@gmail.com
             return this.each(function () {
                 var settings = {
                     uploadurl: "",
+                    imgMaxSize: 167772160,
                     imgUploaded: function () {
                     },
                     uploaderror: function () {
@@ -82,6 +83,10 @@ fabiomaulo@gmail.com
                         if (!f.type.match('image.*')) {
                             continue;
                         }
+                        if (f.size > $plugin.settings.imgMaxSize) {
+                            $plugin.settings.uploaderror("too big image");
+                            continue;
+                        } 
                         plugin.triggerUpload(f);
                     }
                     $plugin.settings.allImgsUploaded();
