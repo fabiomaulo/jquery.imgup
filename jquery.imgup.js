@@ -23,6 +23,7 @@ fabiomaulo@gmail.com
                     },
                     completeFormData: function (data) {
                     },
+                    enableLocalFileRead: false,
                     onFileReaded: function (file, fbinary) {
                         // when the browser supports FileReader this event happens after upload success
                     }
@@ -113,8 +114,8 @@ fabiomaulo@gmail.com
                 } catch (ex) {
                     tFormData = false;
                 }
-
-                $plugin.data("imgup", { hasFormData: tFormData, hasFileReader: window.FileReader });
+                var tFileReader = window.FileReader && $plugin.settings.enableLocalFileRead;
+                $plugin.data("imgup", { hasFormData: tFormData, hasFileReader: tFileReader });
                 // linkedDropZone
                 if ($plugin.settings.linkedDropZone) {
                     $plugin.data("imgup").dropZone = $plugin.settings.linkedDropZone;
