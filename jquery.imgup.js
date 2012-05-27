@@ -94,6 +94,25 @@ fabiomaulo@gmail.com
                     $plugin.settings.allImgsSent();
                 };
 
+                this.configureDropZone = function () {
+                    if ($plugin.settings.linkedDropZone) {
+                        $plugin.data("imgup").dropZone = $plugin.settings.linkedDropZone;
+                        $.each($plugin.settings.linkedDropZone, function (idx, dz) {
+                            dz.addEventListener('dragover', function (evt) {
+                                evt.stopPropagation();
+                                evt.preventDefault();
+                                evt.dataTransfer.dropEffect = 'copy';
+                            }, false);
+                            dz.addEventListener('drop', function (evt) {
+                                evt.stopPropagation();
+                                evt.preventDefault();
+                                var files = evt.dataTransfer.files;
+                                plugin.triggerFilesUpload(files);
+                            }, false);
+                        });
+                    }
+                };
+
                 var tFormData = false;
                 try {
                     new FormData();
@@ -103,23 +122,7 @@ fabiomaulo@gmail.com
                 }
                 var tFileReader = window.FileReader && $plugin.settings.enableLocalFileRead;
                 $plugin.data("imgup", { hasFormData: tFormData, hasFileReader: tFileReader });
-                // linkedDropZone
-                if ($plugin.settings.linkedDropZone) {
-                    $plugin.data("imgup").dropZone = $plugin.settings.linkedDropZone;
-                    $.each($plugin.settings.linkedDropZone, function (idx, dz) {
-                        dz.addEventListener('dragover', function (evt) {
-                            evt.stopPropagation();
-                            evt.preventDefault();
-                            evt.dataTransfer.dropEffect = 'copy';
-                        }, false);
-                        dz.addEventListener('drop', function (evt) {
-                            evt.stopPropagation();
-                            evt.preventDefault();
-                            var files = evt.dataTransfer.files;
-                            plugin.triggerFilesUpload(files);
-                        }, false);
-                    });
-                }
+                plugin.configureDropZone();
 
                 $plugin.bind("change.imgup", function () {
                     var files = plugin.files;
