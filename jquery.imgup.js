@@ -15,9 +15,19 @@ fabiomaulo@gmail.com
                 var settings = {
                     uploadurl: "",
                     imgMaxSize: 167772160,
-                    imgUploaded: function (data) {
+                    imgUploading: function (singleFile) {
+                        // create some special data before send the request for a single file
+                        // return uploadingData
+                        return null;
                     },
-                    uploaderror: function (textStatus) {
+                    imgUploaded: function (data, uploadingData) {
+                        // data: the data of the response
+                        // uploadingData: data created before send the request for the upload
+                    },
+                    uploaderror: function (uploadingData, textStatus, errorThrown) {
+                        // uploadingData: data created before send the request for the upload
+                        // textStatus: null, "timeout", "error", "abort", "parsererror".
+                        // errorThrown: receives the textual portion of the HTTP status, such as "Not Found" or "Internal Server Error."
                     },
                     allImgsSent: function () {
                     },
@@ -47,6 +57,7 @@ fabiomaulo@gmail.com
                 };
 
                 this.uploadWithFormData = function (singleFile) {
+                    var uploadingData = $plugin.settings.imgUploading(singleFile);
                     var datas = new FormData();
                     datas.append('image', singleFile);
                     $plugin.settings.completeFormData(datas);
@@ -59,7 +70,7 @@ fabiomaulo@gmail.com
                         processData: false,
                         data: datas,
                         success: function (rdata) {
-                            $plugin.settings.imgUploaded(rdata);
+                            $plugin.settings.imgUploaded(rdata, uploadingData);
 
                             if ($plugin.data("imgup").hasFileReader) {
                                 var reader = new FileReader();
@@ -73,7 +84,7 @@ fabiomaulo@gmail.com
                             }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
-                            $plugin.settings.uploaderror(textStatus);
+                            $plugin.settings.uploaderror(uploadingData, textStatus, errorThrown);
                         }
                     });
                 };
