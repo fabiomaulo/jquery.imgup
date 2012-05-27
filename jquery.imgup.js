@@ -109,19 +109,18 @@ fabiomaulo@gmail.com
 
                 this.configureDropZone = function () {
                     if ($plugin.settings.linkedDropZone) {
-                        $plugin.data("imgup").dropZone = $plugin.settings.linkedDropZone;
                         $.each($plugin.settings.linkedDropZone, function (idx, dz) {
-                            dz.addEventListener('dragover', function (evt) {
-                                evt.stopPropagation();
-                                evt.preventDefault();
-                                evt.dataTransfer.dropEffect = 'copy';
-                            }, false);
-                            dz.addEventListener('drop', function (evt) {
-                                evt.stopPropagation();
-                                evt.preventDefault();
-                                var files = evt.dataTransfer.files;
+                            $(dz).on('dragover.imgup', function (e) {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                e.originalEvent.dataTransfer.dropEffect = 'copy';
+                            });
+                            $(dz).on('drop.imgup', function (e) {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                var files = e.originalEvent.dataTransfer.files;
                                 plugin.triggerFilesUpload(files);
-                            }, false);
+                            });
                         });
                     }
                 };
@@ -137,7 +136,7 @@ fabiomaulo@gmail.com
                 $plugin.data("imgup", { hasFormData: tFormData, hasFileReader: tFileReader });
                 plugin.configureDropZone();
 
-                $plugin.bind("change.imgup", function () {
+                $plugin.on("change.imgup", function () {
                     var files = plugin.files;
                     plugin.triggerFilesUpload(files);
                 });
