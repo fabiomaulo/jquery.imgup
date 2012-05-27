@@ -36,8 +36,9 @@ fabiomaulo@gmail.com
                     completeFormData: function (formdata) {
                     },
                     enableLocalFileRead: false,
-                    onFileReaded: function (file, fbinary) {
-                        // when the browser supports FileReader this event happens after upload success
+                    onFileReaded: function (uploadingData, file, fbinary) {
+                        // when the browser supports FileReader this event happens after async upload request no matter which will be the response
+                        // uploadingData: data created before send the request for the upload
                     }
                 };
 
@@ -71,22 +72,21 @@ fabiomaulo@gmail.com
                         data: datas,
                         success: function (rdata) {
                             $plugin.settings.imgUploaded(rdata, uploadingData);
-
-                            if ($plugin.data("imgup").hasFileReader) {
-                                var reader = new FileReader();
-                                // Closure to capture the file information.
-                                reader.onload = (function (theFile) {
-                                    return function (e) {
-                                        $plugin.settings.onFileReaded(theFile, e.target.result);
-                                    };
-                                })(singleFile);
-                                reader.readAsDataURL(singleFile);
-                            }
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                             $plugin.settings.uploaderror(uploadingData, textStatus, errorThrown);
                         }
                     });
+                    if ($plugin.data("imgup").hasFileReader) {
+                        var reader = new FileReader();
+                        // Closure to capture the file information.
+                        reader.onload = (function (theFile) {
+                            return function (e) {
+                                $plugin.settings.onFileReaded(uploadingData, theFile, e.target.result);
+                            };
+                        })(singleFile);
+                        reader.readAsDataURL(singleFile);
+                    };
                 };
 
                 this.triggerFilesUpload = function (files) {
