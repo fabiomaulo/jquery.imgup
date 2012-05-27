@@ -19,7 +19,7 @@ fabiomaulo@gmail.com
                     },
                     uploaderror: function (textStatus) {
                     },
-                    allImgsUploaded: function () {
+                    allImsSent: function () {
                     },
                     completeFormData: function (formdata) {
                     },
@@ -88,7 +88,7 @@ fabiomaulo@gmail.com
                         }
                         plugin.triggerUpload(f);
                     }
-                    $plugin.settings.allImgsUploaded();
+                    $plugin.settings.allImsSent();
                 };
 
                 var tFormData = false;
