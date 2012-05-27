@@ -14,6 +14,7 @@ fabiomaulo@gmail.com
             return this.each(function () {
                 var settings = {
                     uploadurl: "",
+                    sizeExceededMessage: "too big image",
                     imgMaxSize: 167772160,
                     imgUploading: function (singleFile) {
                         // create some special data before send the request for a single file
@@ -59,6 +60,11 @@ fabiomaulo@gmail.com
 
                 this.uploadWithFormData = function (singleFile) {
                     var uploadingData = $plugin.settings.imgUploading(singleFile);
+                    if (singleFile.size > $plugin.settings.imgMaxSize) {
+                        $plugin.settings.uploaderror(uploadingData, $plugin.settings.sizeExceededMessage, null);
+                        return;
+                    }
+
                     var datas = new FormData();
                     datas.append('image', singleFile);
                     $plugin.settings.completeFormData(datas);
@@ -94,10 +100,6 @@ fabiomaulo@gmail.com
                     for (var i = 0, len = files.length; i < len; i++) {
                         var f = files[i];
                         if (!f.type.match('image.*')) {
-                            continue;
-                        }
-                        if (f.size > $plugin.settings.imgMaxSize) {
-                            $plugin.settings.uploaderror("too big image");
                             continue;
                         }
                         plugin.triggerUpload(f);
