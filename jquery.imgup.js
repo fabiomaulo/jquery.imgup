@@ -19,7 +19,9 @@ fabiomaulo@gmail.com
                     },
                     uploaderror: function (textStatus) {
                     },
-                    allImsSent: function () {
+                    allImgsSent: function () {
+                    },
+                    allImgsSendStarted: function () {
                     },
                     completeFormData: function (formdata) {
                     },
@@ -48,7 +50,7 @@ fabiomaulo@gmail.com
                     var datas = new FormData();
                     datas.append('image', singleFile);
                     $plugin.settings.completeFormData(datas);
-                    
+
                     $.ajax({
                         url: $plugin.settings.uploadurl,
                         type: "POST",
@@ -77,6 +79,7 @@ fabiomaulo@gmail.com
                 };
 
                 this.triggerFilesUpload = function (files) {
+                    $plugin.settings.allImgsSendStarted();
                     for (var i = 0, len = files.length; i < len; i++) {
                         var f = files[i];
                         if (!f.type.match('image.*')) {
@@ -88,7 +91,7 @@ fabiomaulo@gmail.com
                         }
                         plugin.triggerUpload(f);
                     }
-                    $plugin.settings.allImsSent();
+                    $plugin.settings.allImgsSent();
                 };
 
                 var tFormData = false;
