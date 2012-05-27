@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>title</title>
+		<style>
+		    .drop-zone {background-color: gray; min-height: 30px;}
+		    .thumb {height: 75px; width: 100px; border: 1px solid black; margin: 10px 5px 0 0;}
+		    .thumb.loaded {height: 75px; width: auto;}
+		    .thumb.loading {height: 20px; width: 90px;}
+		    .thumb.loaderror {background-color: red;}
+		</style>
+  		<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js" type="text/javascript"> </script>        
+        <script src="/Scripts/jquery.imgup.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div id="preview" class="drop-zone">
+			DROP ZONE 1
+		</div>
+
+		<div>
+			<input id="trid" type="hidden" value="30aa2e2b161d47c7b365645f7dcbbe48"/>
+			<input id="multi-upload" type="file" multiple="multiple" accept="image/*"/>  
+		</div>
+		<div class="drop-zone">
+			DROP ZONE 2
+		</div>
+
+		<script type="text/javascript">
+		    $('#multi-upload').imgup({ 
+		        uploadurl: '/Home/UploadTempimgs',
+		        completeFormData: function (data) {
+		            data.append("editTransactionId", $('#trid').val());
+		        },
+		        linkedDropZone: $('.drop-zone'),
+		        imgUploading: function (file) {
+		            var img = $('<img />').addClass('thumb').addClass('loading').prop('title', escape(file.name)).prop('src', '/Content/uploading.gif');
+		            $('#preview').append(img);
+		            return img;
+		        },
+		        imgUploaded: function (responseObj, imgelement) {
+		            imgelement.addClass('loaded').prop('src', responseObj.uploadPath).removeClass('loading');
+		        },
+		        uploaderror: function (imgelement, textStatus, errorThrown) {
+		            imgelement.removeClass('loading').addClass('loaderror').prop('src', '/Content/upload_error.png');
+		        }
+//		        ,
+//		        enableLocalFileRead: true,
+//		        onFileReaded: function (imgelement, file, fbinary) {
+//		            imgelement.addClass('loaded').prop('src', fbinary).removeClass('loading');
+//		        }
+		    });
+		</script>
+
+	</body>
+</html>
